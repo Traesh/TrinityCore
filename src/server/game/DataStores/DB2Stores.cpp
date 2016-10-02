@@ -170,6 +170,9 @@ DB2Storage<QuestXPEntry>                        sQuestXPStore("QuestXP.db2", Que
 DB2Storage<RandPropPointsEntry>                 sRandPropPointsStore("RandPropPoints.db2", RandPropPointsMeta::Instance(), HOTFIX_SEL_RAND_PROP_POINTS);
 DB2Storage<RulesetItemUpgradeEntry>             sRulesetItemUpgradeStore("RulesetItemUpgrade.db2", RulesetItemUpgradeMeta::Instance(), HOTFIX_SEL_RULESET_ITEM_UPGRADE);
 DB2Storage<ScalingStatDistributionEntry>        sScalingStatDistributionStore("ScalingStatDistribution.db2", ScalingStatDistributionMeta::Instance(), HOTFIX_SEL_SCALING_STAT_DISTRIBUTION);
+DB2Storage<ScenarioEntry>                       sScenarioStore("Scenario.db2", ScenarioMeta::Instance(), HOTFIX_SEL_SCENARIO);
+DB2Storage<ScenarioEventEntry>                  sScenarioEventEntryStore("ScenarioEventEntry.db2", ScenarioEventEntryMeta::Instance(), HOTFIX_SEL_SCENARIO_EVENT_ENTRY);
+DB2Storage<ScenarioStepEntry>                   sScenarioStepStore("ScenarioStep.db2", ScenarioStepMeta::Instance(), HOTFIX_SEL_SCENARIO_STEP);
 DB2Storage<SceneScriptEntry>                    sSceneScriptStore("SceneScript.db2", SceneScriptMeta::Instance(), HOTFIX_SEL_SCENE_SCRIPT);
 DB2Storage<SceneScriptPackageEntry>             sSceneScriptPackageStore("SceneScriptPackage.db2", SceneScriptPackageMeta::Instance(), HOTFIX_SEL_SCENE_SCRIPT_PACKAGE);
 DB2Storage<SkillLineEntry>                      sSkillLineStore("SkillLine.db2", SkillLineMeta::Instance(), HOTFIX_SEL_SKILL_LINE);
@@ -451,6 +454,9 @@ void DB2Manager::LoadStores(std::string const& dataPath, uint32 defaultLocale)
     LOAD_DB2(sRandPropPointsStore);
     LOAD_DB2(sRulesetItemUpgradeStore);
     LOAD_DB2(sScalingStatDistributionStore);
+    LOAD_DB2(sScenarioStore);
+    LOAD_DB2(sScenarioEventEntryStore);
+    LOAD_DB2(sScenarioStepStore);
     LOAD_DB2(sSceneScriptStore);
     LOAD_DB2(sSceneScriptPackageStore);
     LOAD_DB2(sSkillLineStore);

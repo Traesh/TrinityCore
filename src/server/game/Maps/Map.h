@@ -42,6 +42,7 @@ class Group;
 class InstanceMap;
 class InstanceSave;
 class InstanceScript;
+class InstanceScenario;
 class MapInstanced;
 class Object;
 class Player;
@@ -766,6 +767,8 @@ class TC_GAME_API InstanceMap : public Map
         bool Reset(uint8 method);
         uint32 GetScriptId() const { return i_script_id; }
         InstanceScript* GetInstanceScript() { return i_data; }
+        InstanceScenario* GetInstanceScenario() { return i_scenario; }
+        void SetInstanceScenario(InstanceScenario* scenario) { i_scenario = scenario; }
         void PermBindAllPlayers(Player* source);
         void UnloadAll() override;
         EnterState CannotEnter(Player* player) override;
@@ -783,6 +786,7 @@ class TC_GAME_API InstanceMap : public Map
         bool m_resetAfterUnload;
         bool m_unloadWhenEmpty;
         InstanceScript* i_data;
+        InstanceScenario* i_scenario;
         uint32 i_script_id;
 };
 

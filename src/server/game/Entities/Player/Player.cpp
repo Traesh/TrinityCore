@@ -58,6 +58,7 @@
 #include "GuildMgr.h"
 #include "InstancePackets.h"
 #include "InstanceSaveMgr.h"
+#include "InstanceScenario.h"
 #include "InstanceScript.h"
 #include "ItemPackets.h"
 #include "KillRewarder.h"
