@@ -220,6 +220,22 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo) const
             }
             break;
         }
+        case CONDITION_QUEST_OBJECTIVE_COMPLETE:
+        {
+            if (Player* player = object->ToPlayer())
+            {
+                Quest const* qInfo = sObjectMgr->GetQuestTemplate(ConditionValue1);
+                if (!qInfo)
+                    break;
+
+                QuestObjective const* qObjective = qInfo->GetObjectiveFromStorageIndex(ConditionValue2);
+                if (!qObjective)
+                    break;
+
+                condMeets = (player->IsQuestObjectiveComplete(qInfo, *qObjective) && !player->GetQuestRewardStatus(ConditionValue1));
+            }
+            break;
+        }
         case CONDITION_QUEST_NONE:
         {
             if (Player* player = object->ToPlayer())
@@ -518,6 +534,9 @@ uint32 Condition::GetSearcherTypeMaskForCondition() const
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         case CONDITION_QUEST_COMPLETE:
+            mask |= GRID_MAP_TYPE_MASK_PLAYER;
+            break;
+        case CONDITION_QUEST_OBJECTIVE_COMPLETE:
             mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         case CONDITION_QUEST_NONE:
@@ -1898,6 +1917,24 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond) const
                 TC_LOG_ERROR("sql.sql", "%s points to non-existing quest (%u), skipped.", cond->ToString(true).c_str(), cond->ConditionValue1);
                 return false;
             }
+            break;
+        }
+        case CONDITION_QUEST_OBJECTIVE_COMPLETE:
+        {
+            Quest const* qInfo = sObjectMgr->GetQuestTemplate(cond->ConditionValue1);
+            if (!qInfo)
+            {
+                TC_LOG_ERROR("sql.sql", "%s points to non-existing quest (%u), skipped.", cond->ToString(true).c_str(), cond->ConditionValue1);
+                return false;
+            }
+
+            QuestObjective const* qObjective = qInfo->GetObjectiveFromStorageIndex(cond->ConditionValue2);
+            if (!qObjective)
+            {
+                TC_LOG_ERROR("sql.sql", "%s points to non-existing quest objective (quest %u, storageIndex %u), skipped.", cond->ToString(true).c_str(), cond->ConditionValue1, cond->ConditionValue2);
+                return false;
+            }
+
             break;
         }
         case CONDITION_ACTIVE_EVENT:

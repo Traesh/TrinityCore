@@ -373,3 +373,12 @@ uint32 Quest::CalculateHonorGain(uint8 /*level*/) const
 
     return honor;
 }
+
+QuestObjective* const Quest::GetObjectiveFromStorageIndex(uint32 storageIndex) const
+{
+    for (QuestObjective obj : Objectives)
+        if (obj.StorageIndex = storageIndex)
+            return &obj;
+
+    return nullptr;
+}
