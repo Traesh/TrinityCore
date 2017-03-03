@@ -440,6 +440,7 @@ class TC_GAME_API Spell
         void EffectGiveCurrency(SpellEffIndex effIndex);
         void EffectResurrectWithAura(SpellEffIndex effIndex);
         void EffectCreateAreaTrigger(SpellEffIndex effIndex);
+        void EffectDespawnAreaTrigger(SpellEffIndex effIndex);
         void EffectRemoveTalent(SpellEffIndex effIndex);
         void EffectDestroyItem(SpellEffIndex effIndex);
         void EffectLearnGarrisonBuilding(SpellEffIndex effIndex);

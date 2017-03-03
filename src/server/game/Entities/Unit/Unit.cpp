@@ -4972,6 +4972,26 @@ void Unit::RemoveAllAreaTriggers()
         m_areaTrigger.front()->Remove();
 }
 
+void Unit::RemoveAllAreaTriggersInRadius(float radius)
+{
+    if (!radius)
+    {
+        RemoveAllAreaTriggers();
+        return;
+    }
+
+    for (auto atItr = m_areaTrigger.begin(); atItr != m_areaTrigger.end(); )
+    {
+        if (IsWithinDistInMap(*atItr, radius))
+        {
+            auto toRemoveItr = atItr++;
+            (*toRemoveItr)->Remove();
+        }
+        else
+            ++atItr;
+    }
+}
+
 void Unit::SendSpellNonMeleeDamageLog(SpellNonMeleeDamage const* log)
 {
     WorldPackets::CombatLog::SpellNonMeleeDamageLog packet;

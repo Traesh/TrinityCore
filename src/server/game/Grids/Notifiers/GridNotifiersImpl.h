@@ -558,6 +558,15 @@ void Trinity::PlayerLastSearcher<Check>::Visit(PlayerMapType& m)
     }
 }
 
+template<class Check>
+void Trinity::AreaTriggerListSearcher<Check>::Visit(AreaTriggerMapType &m)
+{
+    for (AreaTriggerMapType::iterator itr = m.begin(); itr != m.end(); ++itr)
+        if (itr->GetSource()->IsInPhase(_searcher))
+            if (i_check(itr->GetSource()))
+                i_objects.push_back(itr->GetSource());
+}
+
 template<class Builder>
 void Trinity::LocalizedPacketDo<Builder>::operator()(Player* p)
 {

@@ -576,6 +576,23 @@ namespace Trinity
         template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED> &) { }
     };
 
+    // AreaTrigger searcher
+
+    template<class Check>
+    struct AreaTriggerListSearcher
+    {
+        WorldObject const* _searcher;
+        std::list<AreaTrigger*> &i_objects;
+        Check& i_check;
+
+        AreaTriggerListSearcher(WorldObject const* searcher, std::vector<AreaTrigger*> &objects, Check & check)
+            : _searcher(searcher), i_objects(objects), i_check(check) { }
+
+        void Visit(AreaTriggerMapType &m);
+
+        template<class NOT_INTERESTED> void Visit(GridRefManager<NOT_INTERESTED> &) { }
+    };
+
     // CHECKS && DO classes
 
     // WorldObject check classes
@@ -1421,6 +1438,25 @@ namespace Trinity
             bool _present;
             uint32 _spellId;
             ObjectGuid _casterGUID;
+    };
+
+    class AreaTriggerWithCasterInRange
+    {
+        public:
+            AreaTriggerWithCasterInRange(Unit const* caster, Position const* fromPos, float range) : i_caster(caster), i_fromPos(fromPos), i_range(range) { }
+
+            bool operator()(AreaTrigger* at) const
+            {
+                if (at->GetCaster() == i_caster && at->IsWithinDist2d(i_fromPos, i_range))
+                    return true;
+
+                return false;
+            }
+
+        private:
+            Unit const* i_caster;
+            Position const* i_fromPos;
+            float i_range;
     };
 
     // Player checks and do

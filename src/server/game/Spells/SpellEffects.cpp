@@ -62,6 +62,7 @@
 #include "MiscPackets.h"
 #include "SpellPackets.h"
 #include "TalentPackets.h"
+#include "GridNotifiers.h"
 
 pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
 {
@@ -247,7 +248,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectCreateAreaTrigger,                        //179 SPELL_EFFECT_CREATE_AREATRIGGER
     &Spell::EffectNULL,                                     //180 SPELL_EFFECT_UPDATE_AREATRIGGER
     &Spell::EffectRemoveTalent,                             //181 SPELL_EFFECT_REMOVE_TALENT
-    &Spell::EffectNULL,                                     //182 SPELL_EFFECT_DESPAWN_AREATRIGGER
+    &Spell::EffectDespawnAreaTrigger,                       //182 SPELL_EFFECT_DESPAWN_AREATRIGGER
     &Spell::EffectNULL,                                     //183 SPELL_EFFECT_183
     &Spell::EffectNULL,                                     //184 SPELL_EFFECT_REPUTATION
     &Spell::EffectNULL,                                     //185 SPELL_EFFECT_185
@@ -5622,6 +5623,38 @@ void Spell::EffectCreateAreaTrigger(SpellEffIndex /*effIndex*/)
     AreaTrigger* areaTrigger = new AreaTrigger();
     if (!areaTrigger->CreateAreaTrigger(effectInfo->MiscValue, GetCaster(), nullptr, GetSpellInfo(), destTarget->GetPosition(), duration, m_SpellVisual, m_castId))
         delete areaTrigger;
+}
+
+void Spell::EffectDespawnAreaTrigger(SpellEffIndex p_EffIndex)
+{
+    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
+        return;
+
+    float radius = effectInfo->CalcRadius();
+
+    if (unitTarget)
+    {
+        unitTarget->RemoveAllAreaTriggersInRadius(radius);
+    }
+    else if (m_targets.HasDst())
+    {
+        Unit* caster = GetCaster();
+        std::vector<AreaTrigger*> areaTriggers;
+
+        CellCoord p(Trinity::ComputeCellCoord(destTarget->GetPositionX(), destTarget->GetPositionY()));
+        Cell cell(p);
+        cell.SetNoCreate();
+
+        Trinity::AreaTriggerWithCasterInRange u_check(caster, &destTarget->GetPosition(), radius);
+        Trinity::AreaTriggerListSearcher<Trinity::AreaTriggerWithCasterInRange> searcher(caster, areaTriggers, u_check);
+
+        TypeContainerVisitor<Trinity::AreaTriggerListSearcher<Trinity::AreaTriggerWithCasterInRange>, GridTypeMapContainer >  grid_areatrigger_searcher(searcher);
+
+        cell.Visit(p, grid_areatrigger_searcher, *caster->GetMap(), *caster, radius);
+
+        for (AreaTrigger* at : areaTriggers)
+            at->Remove();
+    }
 }
 
 void Spell::EffectRemoveTalent(SpellEffIndex /*effIndex*/)
