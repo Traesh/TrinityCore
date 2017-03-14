@@ -40,6 +40,7 @@ struct Mail;
 struct ItemExtendedCostEntry;
 struct TrainerSpell;
 struct VendorItem;
+struct WorldPackets::Movement::MovementForce;
 
 class PlayerAchievementMgr;
 class ReputationMgr;
@@ -2486,6 +2487,10 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         void ValidateMovementInfo(MovementInfo* mi);
 
         void SendMovementSetCollisionHeight(float height);
+        void ApplyMovementForce(ObjectGuid forceGuid, G3D::Vector3 origin, G3D::Vector3 direction, float magnitude, uint8 type = 0);
+        void ApplyMovementForce(WorldPackets::Movement::MovementForce movementForce);
+        void RemoveMovementForce(ObjectGuid forceGuid);
+        void RemoveAllMovementForces();
 
         bool CanFly() const override { return m_movementInfo.HasMovementFlag(MOVEMENTFLAG_CAN_FLY); }
 
@@ -2873,6 +2878,8 @@ class TC_GAME_API Player : public Unit, public GridObject<Player>
         SceneMgr m_sceneMgr;
 
         std::unordered_map<ObjectGuid /*LootObject*/, ObjectGuid /*world object*/> m_AELootView;
+
+        std::unordered_map<ObjectGuid, WorldPackets::Movement::MovementForce> m_movementForces;
 };
 
 TC_GAME_API void AddItemsSetItem(Player* player, Item* item);

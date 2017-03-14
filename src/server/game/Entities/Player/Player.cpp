@@ -26960,6 +26960,45 @@ float Player::GetCollisionHeight(bool mounted) const
     }
 }
 
+void Player::ApplyMovementForce(ObjectGuid forceGuid, G3D::Vector3 origin, G3D::Vector3 direction, float magnitude, uint8 type = 0)
+{
+    WorldPackets::Movement::MovementForce movementForce;
+    movementForce.ID = forceGuid;
+    movementForce.Origin = origin;
+    movementForce.Direction = direction;
+    movementForce.Magnitude = magnitude;
+    movementForce.TransportID = GetTransport() ? GetTransport()->GetEntry() : 0;
+    movementForce.Type = 0;
+
+    ApplyMovementForce(movementForce);
+}
+
+void Player::ApplyMovementForce(WorldPackets::Movement::MovementForce movementForce)
+{
+    m_movementForces[movementForce.ID] = movementForce;
+
+    WorldPackets::Movement::MoveApplyMovementForce packet;
+    packet.MoverGUID = GetGUID();
+    packet.SequenceIndex = m_movementCounter++;
+    packet.Force = movementForce;
+    SendMessageToSet(packet.Write(), this);
+}
+
+void Player::RemoveMovementForce(ObjectGuid forceGuid)
+{
+    WorldPackets::Movement::MoveApplyMovementForce packet;
+    packet.MoverGUID = GetGUID();
+    packet.SequenceIndex = m_movementCounter++;
+    packet.ID = forceGuid;
+    SendMessageToSet(packet.Write(), this);
+}
+
+void Player::RemoveAllMovementForces()
+{
+    for (auto movementForceItr : m_movementForces)
+        RemoveMovementForce(movementForceItr.first);
+}
+
 std::string Player::GetMapAreaAndZoneString() const
 {
     uint32 areaId = GetAreaId();

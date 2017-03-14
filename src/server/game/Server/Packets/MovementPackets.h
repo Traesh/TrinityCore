@@ -288,6 +288,30 @@ namespace WorldPackets
             Optional<float> PitchRate;
         };
 
+        class MoveApplyMovementForce final : public ServerPacket
+        {
+        public:
+            MoveApplyMovementForce() : ServerPacket(SMSG_MOVE_APPLY_MOVEMENT_FORCE) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0; ///< Unit movement packet index, incremented each time
+            MovementForce Force;
+        };
+
+        class MoveRemoveMovementForce final : public ServerPacket
+        {
+        public:
+            MoveRemoveMovementForce() : ServerPacket(SMSG_MOVE_REMOVE_MOVEMENT_FORCE) { }
+
+            WorldPacket const* Write() override;
+
+            ObjectGuid MoverGUID;
+            uint32 SequenceIndex = 0; ///< Unit movement packet index, incremented each time
+            ObjectGuid ID;
+        };
+
         class MoveUpdateApplyMovementForce final : public ServerPacket
         {
         public:
