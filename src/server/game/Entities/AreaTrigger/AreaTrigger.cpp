@@ -386,33 +386,21 @@ void AreaTrigger::SearchUnitInSphere(std::vector<Unit*>& targetList)
     SearchUnits(targetList, radius, true);
 }
 
-void AreaTrigger::SearchUnitInBox(std::vector<Unit*>& targetList)
+void AreaTrigger::SearchUnitInBox(std::list<Unit*>& targetList)
 {
+    Trinity::AnyUnitInObjectRangeCheck check(this, GetTemplate()->MaxSearchRadius, false);
+    Trinity::UnitListSearcher<Trinity::AnyUnitInObjectRangeCheck> searcher(this, targetList, check);
+    Cell::VisitAllObjects(this, searcher, GetTemplate()->MaxSearchRadius);
+
+    Position const& boxCenter = GetPosition();
     float extentsX = GetTemplate()->BoxDatas.Extents[0];
     float extentsY = GetTemplate()->BoxDatas.Extents[1];
     float extentsZ = GetTemplate()->BoxDatas.Extents[2];
 
-    SearchUnits(targetList, GetTemplate()->MaxSearchRadius, false);
-
-    float halfExtentsX = extentsX / 2.0f;
-    float halfExtentsY = extentsY / 2.0f;
-    float halfExtentsZ = extentsZ / 2.0f;
-
-    float minX = GetPositionX() - halfExtentsX;
-    float maxX = GetPositionX() + halfExtentsX;
-
-    float minY = GetPositionY() - halfExtentsY;
-    float maxY = GetPositionY() + halfExtentsY;
-
-    float minZ = GetPositionZ() - halfExtentsZ;
-    float maxZ = GetPositionZ() + halfExtentsZ;
-
-    G3D::AABox const box({ minX, minY, minZ }, { maxX, maxY, maxZ });
-
-    targetList.erase(std::remove_if(targetList.begin(), targetList.end(), [&box](Unit* unit) -> bool
+    targetList.remove_if([boxCenter, extentsX, extentsY, extentsZ](Unit* unit) -> bool
     {
-        return !box.contains({ unit->GetPositionX(), unit->GetPositionY(), unit->GetPositionZ() });
-    }), targetList.end());
+        return !unit->IsWithinBox(boxCenter, extentsX, extentsY, extentsZ);
+    });
 }
 
 void AreaTrigger::SearchUnitInPolygon(std::vector<Unit*>& targetList)
